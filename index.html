@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Study Buddy | Engineering Learning Hub</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><div class="logo">✦</div><div><h1>AI Study Buddy</h1><p class="tagline">Your personal first-year engineering learning hub</p></div></div>
+      <div class="actions"><button class="btn" onclick="toggleTheme()">☾ Theme</button><button class="btn" onclick="exportProgress()">↧ Export progress</button><button class="btn" onclick="resetApp()">↻ Reset demo</button></div>
+    </header>
+
+    <nav class="tabs" aria-label="Main navigation">
+      <button class="tab active" data-tab="dashboard" onclick="showTab('dashboard',this)">⌂ Dashboard</button>
+      <button class="tab" data-tab="tutor" onclick="showTab('tutor',this)">✦ AI Tutor</button>
+      <button class="tab" data-tab="quiz" onclick="showTab('quiz',this)">▣ Quiz Lab</button>
+      <button class="tab" data-tab="planner" onclick="showTab('planner',this)">▦ Study Planner</button>
+      <button class="tab" data-tab="flashcards" onclick="showTab('flashcards',this)">◈ Flashcards</button>
+      <button class="tab" data-tab="progress" onclick="showTab('progress',this)">↗ Progress</button>
+    </nav>
+
+    <section id="dashboard" class="panel active">
+      <div class="grid">
+        <div>
+          <div class="card hero"><div class="eyebrow" style="color:#d9d6ff">Your learning workspace</div><h2>Small steps today. Strong engineering skills tomorrow.</h2><p class="muted">Learn concepts, practise exam-style questions, build a study routine and track your progress in one place.</p><button class="btn" style="background:white;color:#4338ca;border:0" onclick="showTab('tutor',document.querySelector('[data-tab=tutor]'))">Start learning →</button></div>
+          <div class="card"><h2>📚 Explore your subjects</h2><p class="muted">Choose a subject to load relevant examples and practice questions.</p><div class="subject-grid" id="subjectTiles"></div></div>
+          <div class="card"><h2>✓ Today's checklist</h2><p class="muted">Tick tasks as you finish them. Your progress is saved in this browser.</p><div id="taskList"></div><div class="progress" style="margin-top:14px"><div class="bar" id="taskBar"></div></div><p class="small muted" id="taskSummary">0 of 5 tasks completed</p><div class="row"><input id="newTask" placeholder="Add your own study task"><button class="btn soft" style="flex:0 0 auto" onclick="addTask()">+ Add task</button></div></div>
+        </div>
+        <div>
+          <div class="card"><h2>📈 Your snapshot</h2><p class="muted">Updates as you use the app.</p><div class="statgrid"><div class="stat"><span>Tasks done</span><b id="dashTasks">0</b><small>today</small></div><div class="stat"><span>Quiz average</span><b id="dashScore">—</b><small>attempts</small></div><div class="stat"><span>Study sessions</span><b id="dashSessions">0</b><small>planned</small></div></div></div>
+          <div class="card"><h2>⚡ Quick launch</h2><div class="chips"><button class="chip" onclick="quickAsk('Explain variables in C with an example')">Explain a topic</button><button class="chip" onclick="quickAsk('Give me 5 viva questions')">Viva practice</button><button class="chip" onclick="quickAsk('Summarise the key points')">Quick summary</button><button class="chip" onclick="showTab('quiz',document.querySelector('[data-tab=quiz]'))">Take a quiz</button></div></div>
+          <div class="card"><h2>💡 Study tip</h2><p id="dailyTip">Try active recall: close your notes and explain a concept in your own words before checking the answer.</p><button class="btn soft" onclick="newTip()">Another tip ↻</button></div>
+          <div class="card"><h2>About this version</h2><p class="muted small">This is a richer, interactive frontend with a subject knowledge bank, quizzes, flashcards, a planner and local progress tracking. Tutor answers come from curated examples; a live AI service is not connected yet.</p><span class="pill">LOCAL DEMO MODE</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tutor" class="panel">
+      <div class="grid">
+        <div class="card"><div class="eyebrow">Learn • practise • revise</div><h2>✦ Study Tutor</h2><p class="muted">Ask about a first-year topic. Select a subject and learning style for a more relevant answer.</p>
+          <div class="row"><div class="field"><label for="tutorSubject">Subject</label><select id="tutorSubject" onchange="renderExamples()"></select></div><div class="field"><label for="answerMode">Answer style</label><select id="answerMode"><option value="simple">Explain simply</option><option value="exam">8-mark exam answer</option><option value="viva">Viva preparation</option><option value="steps">Step-by-step</option></select></div></div>
+          <label class="small muted" for="question">Your question</label><textarea id="question" placeholder="Example: Explain type casting in C with an example..."></textarea>
+          <div class="row" style="margin-top:10px"><button class="btn primary" onclick="askTutor()">Get explanation ↗</button><button class="btn soft" onclick="clearTutor()">Clear</button></div>
+          <div class="status muted small" id="tutorStatus" style="margin-top:10px">Ready • Curated local knowledge base</div><div id="tutorResponse" class="response"><h3>Your explanation appears here</h3><p class="muted">Choose a sample question below or type your own question from the supported topics.</p></div>
+        </div>
+        <div class="card"><h2>Sample questions</h2><p class="muted small">More than five practical examples are included for every subject. Tap any one to try it.</p><div class="field"><label for="exampleFilter">Filter examples</label><input id="exampleFilter" placeholder="Search examples..." oninput="renderExamples()"></div><div id="examples" class="chips"></div><hr style="border:0;border-top:1px solid var(--border);margin:18px 0"><h3>Recent questions</h3><div id="recentQuestions" class="muted small">Your recent questions will appear here.</div></div>
+      </div>
+    </section>
+
+    <section id="quiz" class="panel">
+      <div class="grid equal"><div class="card"><h2>▣ Quiz Lab</h2><p class="muted">Test your understanding with subject-specific multiple-choice questions.</p><div class="row"><div class="field"><label for="quizSubject">Subject</label><select id="quizSubject" onchange="buildQuiz()"></select></div><div class="field"><label for="quizCount">Questions</label><select id="quizCount" onchange="buildQuiz()"><option value="5">5 questions</option><option value="10">10 questions</option></select></div></div><div id="quizBox"></div><button class="btn primary" onclick="submitQuiz()">Submit answers</button><button class="btn soft" onclick="buildQuiz()">New quiz ↻</button><div id="quizResult" class="response hidden"></div></div>
+      <div><div class="card"><h2>🎯 Quiz strategy</h2><ul class="list-clean"><li>Try answering before checking your notes.</li><li>Read the explanation for every incorrect answer.</li><li>Revisit weak topics and retry the quiz.</li><li>Use the tutor to understand the underlying concept.</li></ul></div><div class="card"><h2>Recent quiz results</h2><div id="quizHistory" class="muted small">No quiz attempts yet.</div></div></div></div>
+    </section>
+
+    <section id="planner" class="panel">
+      <div class="grid equal"><div class="card"><h2>▦ Build a study session</h2><p class="muted">Create a practical plan based on your available time.</p><div class="field"><label for="planSubject">Subject</label><select id="planSubject"></select></div><div class="row"><div class="field"><label for="planHours">Available time (hours)</label><input id="planHours" type="number" min="0.5" max="10" step="0.5" value="2"></div><div class="field"><label for="planGoal">Main goal</label><select id="planGoal"><option value="learn">Learn a new topic</option><option value="revise">Revise for exam</option><option value="practice">Solve problems</option><option value="viva">Prepare for viva</option></select></div></div><div class="field"><label for="deadline">Target date (optional)</label><input id="deadline" type="date"></div><button class="btn primary" onclick="makePlan()">Create my plan</button><div id="planOutput" class="response"><h3>Your plan will appear here</h3><p class="muted">Choose your subject, time and goal.</p></div></div>
+      <div><div class="card"><h2>⏱ Focus timer</h2><p class="muted">A simple Pomodoro-style timer. Keep this page open while studying.</p><div class="field"><label for="timerMinutes">Session length (minutes)</label><select id="timerMinutes" onchange="setTimer()"><option value="15">15 minutes</option><option value="25" selected>25 minutes</option><option value="40">40 minutes</option><option value="50">50 minutes</option></select></div><div class="timer" id="timerDisplay">25:00</div><div class="row"><button class="btn primary" id="timerToggle" onclick="toggleTimer()">▶ Start</button><button class="btn soft" onclick="resetTimer()">↻ Reset</button></div><p class="muted small" id="timerStatus" style="text-align:center">Ready when you are.</p></div><div class="card"><h2>Suggested study cycle</h2><ol class="list-clean"><li>Understand one concept.</li><li>Practise without looking at the solution.</li><li>Check mistakes and write a short note.</li><li>Take a short break before the next session.</li></ol></div></div></div>
+    </section>
+
+    <section id="flashcards" class="panel">
+      <div class="grid equal"><div class="card"><h2>◈ Flashcards</h2><p class="muted">Quickly revise important definitions and concepts.</p><div class="field"><label for="flashSubject">Subject</label><select id="flashSubject" onchange="loadFlashcards()"></select></div><div class="flashcard" id="flashFace">Select a subject to begin.</div><p class="muted small" style="text-align:center" id="flashCount">Card 0 of 0</p><div class="row"><button class="btn soft" onclick="prevFlash()">← Previous</button><button class="btn primary" onclick="flipFlash()">Flip card</button><button class="btn soft" onclick="nextFlash()">Next →</button></div></div><div class="card"><h2>How to use active recall</h2><p>1. Read the question side and try to answer from memory.</p><p>2. Flip the card and compare your answer.</p><p>3. If you struggled, repeat the card after a few others.</p><div class="notice">Flashcards are based on core first-year concepts. They are intended for revision, not as a replacement for your class notes or syllabus.</div></div></div>
+    </section>
+
+    <section id="progress" class="panel">
+      <div class="grid equal"><div class="card"><h2>↗ Learning progress</h2><p class="muted">This page updates from checklist completion and quiz attempts stored in this browser.</p><div id="progressSubjects"></div><h3>Study planner sessions</h3><div id="planHistory" class="muted small">No study plans created yet.</div></div><div class="card"><h2>📊 Quiz performance</h2><div class="statgrid"><div class="stat"><span>Attempts</span><b id="totalAttempts">0</b></div><div class="stat"><span>Average</span><b id="averageScore">—</b></div><div class="stat"><span>Best score</span><b id="bestScore">—</b></div></div><h3>Recent attempts</h3><div class="table-wrap"><table><thead><tr><th>Subject</th><th>Score</th><th>Date</th></tr></thead><tbody id="attemptRows"><tr><td colspan="3" class="muted">No attempts yet.</td></tr></tbody></table></div><button class="btn soft" onclick="exportProgress()">Export data as JSON</button></div></div>
+    </section>
+
+    <footer class="footer">AI Study Buddy • First-Year Engineering Learning Hub • Runs locally in your browser</footer>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
